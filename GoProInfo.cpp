@@ -42,7 +42,7 @@
 /*----------------------------------------------------------------------
 |   constants
 +---------------------------------------------------------------------*/
-#define BANNER "GoPro Camera MP4 Information Parser - Version 0.0.1\n"\
+#define BANNER "GoPro Camera MP4 Information Parser\n\tVersion 0.0.2\n"\
                "Get Hypoxic LLC - GPL v2\n"\
                "Updates at http://gethypoxic.com\n"\
                "\t(Using Bento4 Version " AP4_VERSION_STRING ")\n"\
@@ -116,10 +116,7 @@ static void
 PrintUsageAndExit()
 {
     fprintf(stderr, 
-            BANNER 
-            "\n\nusage: GoProInfo [options] <input>\n"
-            "Options:\n"
-            "  --verbose:          show extended information when available\n");
+            "\n\nusage: GoProInfo <input>\n");
     exit(1);
 }
 
@@ -175,7 +172,7 @@ SetCameraType(AP4_Atom& atom)
             for(int i=0;Camera == NONE;i++){
                 if(strcmp(CameraID, CameraTypes[i].Compare) == 0){
                     Camera = CameraTypes[i].type;
-                    printf("\nCamera: \n\t%s\n\nFW Version:\n\t%s\n", CameraTypes[i].Name, FirmwareVersion);
+                    printf("Camera: \n\t%s\n\nFW Version:\n\t%s\n", CameraTypes[i].Name, FirmwareVersion);
                 }
             }
         }
@@ -256,28 +253,28 @@ GetGoProSettings(AP4_Atom& atom)
         //printf("Settings read: 0x%x 0x%x\n", sett1, sett2);
 
         // 0 video
-        printf("\tmode: %d\n",mode);
+        printf("\tmode:\t\t\t%d\n",mode);
         
         // 0 video, 1 timelapse video
-        printf("\tsubmode: %d\n",submode);
-        printf("\ttimelapse_rate: %d\n",timelapse_rate);
-        printf("\torientation: %d\n",orientation);
-        printf("\tspotmeter: %d\n",spotmeter);
+        printf("\tsubmode:\t\t%d\n",submode);
+        printf("\ttimelapse_rate:\t\t%d\n",timelapse_rate);
+        printf("\torientation:\t\t%d\n",orientation);
+        printf("\tspotmeter:\t\t%d\n",spotmeter);
         
         //printf("white_bal (Indicates Color Correction Matrix not applied): %d\n",white_bal);
-        printf("\tfov: %d\n",fov);
-        printf("\tlowlight: %d\n",lowlight);
-        printf("\tsuperview: %d\n",superview);
+        printf("\tfov:\t\t\t%d\n",fov);
+        printf("\tlowlight:\t\t%d\n",lowlight);
+        printf("\tsuperview:\t\t%d\n",superview);
 
-        printf("\tprotune: %d\n",protune);
-        printf("\tprotune_sharpness: %d\n",protune_sharpness);
-        printf("\tprotune_color:  %d\n",protune_color);
-        printf("\tprotune_iso:  %d\n",protune_iso);
-        printf("\tprotune_ev: %d\n",protune_ev);
-        printf("\tprotune_wb: %d\n",protune_wb);
+        printf("\tprotune:\t\t%d\n",protune);
+        printf("\tprotune_sharpness:\t%d\n",protune_sharpness);
+        printf("\tprotune_color:\t\t%d\n",protune_color);
+        printf("\tprotune_iso:\t\t%d\n",protune_iso);
+        printf("\tprotune_ev:\t\t%d\n",protune_ev);
+        printf("\tprotune_wb:\t\t%d\n",protune_wb);
         
-        printf("\tbroadcast_privacy: %d\n",broadcast_privacy);
-        printf("\tmedia_type: %d\n",media_type);
+        printf("\tbroadcast_privacy:\t%d\n",broadcast_privacy);
+        printf("\tmedia_type:\t\t%d\n",media_type);
         
         payload->Release();
     }
@@ -645,7 +642,7 @@ ShowSampleDescription_Text(AP4_SampleDescription& description, bool verbose)
     AP4_DYNAMIC_CAST(AP4_VideoSampleDescription, desc);
     if (video_desc) {
         // Video sample description
-        printf("    Resolution: %dx%d depth %d ", video_desc->GetWidth(), video_desc->GetHeight(), video_desc->GetDepth());
+        printf("    Resolution:\t\t\t%dx%d depth %d ", video_desc->GetWidth(), video_desc->GetHeight(), video_desc->GetDepth());
     }
     
     char coding[5];
@@ -667,7 +664,7 @@ ShowSampleDescription_Text(AP4_SampleDescription& description, bool verbose)
         //printf("    Object Type: %s\n", mpeg_desc->GetObjectTypeString(mpeg_desc->GetObjectTypeId()));
         //printf("    Max Bitrate: %d\n", mpeg_desc->GetMaxBitrate());
         //printf("    Avg Bitrate: %d\n", mpeg_desc->GetAvgBitrate());
-        printf("    Buffer Size: %d\n", mpeg_desc->GetBufferSize());
+        printf("    Buffer Size:\t\t%d\n", mpeg_desc->GetBufferSize());
         
         if (mpeg_desc->GetObjectTypeId() == AP4_OTI_MPEG4_AUDIO          ||
             mpeg_desc->GetObjectTypeId() == AP4_OTI_MPEG2_AAC_AUDIO_LC   ||
@@ -681,9 +678,9 @@ ShowSampleDescription_Text(AP4_SampleDescription& description, bool verbose)
     AP4_DYNAMIC_CAST(AP4_AudioSampleDescription, desc);
     if (audio_desc) {
         // Audio sample description
-        printf("    Sample Rate: %d\n", audio_desc->GetSampleRate());
-        printf("    Sample Size: %d\n", audio_desc->GetSampleSize());
-        printf("    Channels:    %d\n", audio_desc->GetChannelCount());
+        printf("    Sample Rate:\t\ts%d\n", audio_desc->GetSampleRate());
+        printf("    Sample Size:\t\t%d\n", audio_desc->GetSampleSize());
+        printf("    Channels:\t\t\t%d\n", audio_desc->GetChannelCount());
     }
     
     
@@ -1260,10 +1257,10 @@ ShowTrackInfo_Text(AP4_Movie& movie, AP4_Track& track, AP4_ByteStream& stream, b
         avc_desc = AP4_DYNAMIC_CAST(AP4_AvcSampleDescription, sample_desc);
     }
     
-    printf("    Duration:   %d ms\n", track.GetDurationMs());
+    printf("    Duration:\t\t\t%d ms\n", track.GetDurationMs());
     
     if (!fast) {
-        printf("    Bitrate:    %.3f Kbps\n", (float)ComputeBitrate(movie, track, stream)/1000.0);
+        printf("    Bitrate:\t\t\t%.3f Kbps\n", (float)ComputeBitrate(movie, track, stream)/1000.0);
     }
     
     if (track.GetWidth()  || track.GetHeight()) {
@@ -1272,7 +1269,7 @@ ShowTrackInfo_Text(AP4_Movie& movie, AP4_Track& track, AP4_ByteStream& stream, b
     }
     
     if (track.GetType() == AP4_Track::TYPE_VIDEO && track.GetSampleCount()) {
-        printf("    Frame Rate: %.3ffps\n", (float)track.GetSampleCount()/
+        printf("    Frame Rate:\t\t\t%.3ffps\n", (float)track.GetSampleCount()/
                ((float)track.GetMediaDuration()/(float)track.GetMediaTimeScale()));
     }
     
@@ -1596,9 +1593,6 @@ ShowFragments_Text(AP4_Movie& movie, bool verbose, bool show_sample_data, AP4_By
 int
 main(int argc, char** argv)
 {
-    if (argc < 2) {
-        PrintUsageAndExit();
-    }
     Options.format = TEXT_FORMAT;
     const char* filename         = NULL;
     bool        verbose          = false;
@@ -1607,19 +1601,31 @@ main(int argc, char** argv)
     bool        show_layout      = false;
     bool        fast             = false;
     
-    //verbose = true;
+    printf(BANNER "\n");
     
-    while (char* arg = *++argv) {
+    if (argc < 2) {
+        char str[1024] = {0};
+        
+        printf("Drag the file onto the console and press return\n");
+        scanf("%s", str);
+        filename = str;
+        
+        if( filename == NULL)
+            PrintUsageAndExit();
+    } else {
+        while (char* arg = *++argv) {
+            if (filename == NULL) {
+                filename = arg;
+            } else {
+                fprintf(stderr, "ERROR: unexpected argument '%s'\n", arg);
+                return 1;
+            }
+        }
+        
         if (filename == NULL) {
-            filename = arg;
-        } else {
-            fprintf(stderr, "ERROR: unexpected argument '%s'\n", arg);
+            fprintf(stderr, "ERROR: filename missing\n");
             return 1;
         }
-    }
-    if (filename == NULL) {
-        fprintf(stderr, "ERROR: filename missing\n");
-        return 1;
     }
 
     AP4_ByteStream* input = NULL;
@@ -1636,10 +1642,8 @@ main(int argc, char** argv)
     AP4_File* file = new AP4_File(*input, AP4_DefaultAtomFactory::Instance, true);
     input->Release();
     
-    printf(BANNER "\n");
-    
     //ShowFileInfo(*file);
-    printf("Inspecting: %s\n\n", filename);
+    printf("Inspecting:\n\t%s\n\n", filename);
 
     AP4_Movie* movie = file->GetMovie();
     AP4_FtypAtom* ftyp = file->GetFileType();
