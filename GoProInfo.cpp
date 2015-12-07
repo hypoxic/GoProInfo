@@ -70,17 +70,17 @@ typedef struct _CameraType_t{
 
 
 const CameraType_t CameraTypes[] = {
-    {.type = HERO4_Session,.Compare = "HDX.01", .Name = "GoPro HERO4 Session"},
-    {.type = HERO4_Black,.Compare = "HD4.02", .Name = "GoPro HERO4 Black"},
-    {.type = HERO4_Silver,.Compare = "HD4.01", .Name = "GoPro HERO4 Silver"},
-    {.type = HERO3P_Black,.Compare = "HD3.11", .Name = "GoPro HERO3+ Black"},
-    {.type = HERO3P_Silver,.Compare = "HD3.10", .Name = "GoPro HERO3+ Silver"},
-    {.type = HERO3_Black,.Compare = "HD3.03", .Name = "GoPro HERO3 Black"},
-    {.type = HERO3_Silver,.Compare = "HD3.02", .Name = "GoPro HERO3 Silver"},
-    {.type = HERO3_White,.Compare = "HD3.01", .Name = "GoPro HERO3 White"},
-    {.type = HERO,.Compare = "HD3.20", .Name = "GoPro HERO"},
-    {.type = HEROP_LCD,.Compare = "HD3.21", .Name = "GoPro HERO+ LCD"},
-    {.type = HEROP,.Compare = "HD3.22", .Name = "GoPro HERO+"}
+	{  HERO4_Session, "HDX.01", "GoPro HERO4 Session" },
+    {HERO4_Black,"HD4.02", "GoPro HERO4 Black"},
+    {HERO4_Silver,"HD4.01", "GoPro HERO4 Silver"},
+    {HERO3P_Black,"HD3.11", "GoPro HERO3+ Black"},
+    {HERO3P_Silver,"HD3.10", "GoPro HERO3+ Silver"},
+    {HERO3_Black,"HD3.03", "GoPro HERO3 Black"},
+    {HERO3_Silver,"HD3.02", "GoPro HERO3 Silver"},
+    {HERO3_White,"HD3.01", "GoPro HERO3 White"},
+    {HERO,"HD3.20", "GoPro HERO"},
+    {HEROP_LCD,"HD3.21", "GoPro HERO+ LCD"},
+    {HEROP,"HD3.22", "GoPro HERO+"}
 };
 
 const AP4_Atom::Type AP4_ATOM_TYPE_GPRO_FIRM = AP4_ATOM_TYPE('F','I','R','M'); // GoPro Firmware
@@ -643,7 +643,7 @@ ShowSampleDescription_Text(AP4_SampleDescription& description, bool verbose)
     AP4_DYNAMIC_CAST(AP4_VideoSampleDescription, desc);
     if (video_desc) {
         // Video sample description
-        printf("    Resolution:\t\t\t%dx%d depth %d ", video_desc->GetWidth(), video_desc->GetHeight(), video_desc->GetDepth());
+        printf("\tResolution:\t\t%dx%d depth %d ", video_desc->GetWidth(), video_desc->GetHeight(), video_desc->GetDepth());
     }
     
     char coding[5];
@@ -665,7 +665,7 @@ ShowSampleDescription_Text(AP4_SampleDescription& description, bool verbose)
         //printf("    Object Type: %s\n", mpeg_desc->GetObjectTypeString(mpeg_desc->GetObjectTypeId()));
         //printf("    Max Bitrate: %d\n", mpeg_desc->GetMaxBitrate());
         //printf("    Avg Bitrate: %d\n", mpeg_desc->GetAvgBitrate());
-        printf("    Buffer Size:\t\t%d\n", mpeg_desc->GetBufferSize());
+ 				printf("\tBuffer Size:\t\t%d\n", mpeg_desc->GetBufferSize());
         
         if (mpeg_desc->GetObjectTypeId() == AP4_OTI_MPEG4_AUDIO          ||
             mpeg_desc->GetObjectTypeId() == AP4_OTI_MPEG2_AAC_AUDIO_LC   ||
@@ -679,9 +679,9 @@ ShowSampleDescription_Text(AP4_SampleDescription& description, bool verbose)
     AP4_DYNAMIC_CAST(AP4_AudioSampleDescription, desc);
     if (audio_desc) {
         // Audio sample description
-        printf("    Sample Rate:\t\ts%d\n", audio_desc->GetSampleRate());
-        printf("    Sample Size:\t\t%d\n", audio_desc->GetSampleSize());
-        printf("    Channels:\t\t\t%d\n", audio_desc->GetChannelCount());
+        printf("\tSample Rate:\t\ts%d\n", audio_desc->GetSampleRate());
+        printf("\tSample Size:\t\t%d\n", audio_desc->GetSampleSize());
+        printf("\tChannels:\t\t%d\n", audio_desc->GetChannelCount());
     }
     
     
@@ -1258,10 +1258,10 @@ ShowTrackInfo_Text(AP4_Movie& movie, AP4_Track& track, AP4_ByteStream& stream, b
         avc_desc = AP4_DYNAMIC_CAST(AP4_AvcSampleDescription, sample_desc);
     }
     
-    printf("    Duration:\t\t\t%d ms\n", track.GetDurationMs());
+    printf("\tDuration:\t\t%d ms\n", track.GetDurationMs());
     
     if (!fast) {
-        printf("    Bitrate:\t\t\t%.3f Kbps\n", (float)ComputeBitrate(movie, track, stream)/1000.0);
+        printf("\tBitrate:\t\t%.3f Kbps\n", (float)ComputeBitrate(movie, track, stream)/1000.0);
     }
     
     if (track.GetWidth()  || track.GetHeight()) {
@@ -1269,11 +1269,11 @@ ShowTrackInfo_Text(AP4_Movie& movie, AP4_Track& track, AP4_ByteStream& stream, b
     //    printf("    display height: %f\n", (float)track.GetHeight()/65536.0);
     }
     
-    if (track.GetType() == AP4_Track::TYPE_VIDEO && track.GetSampleCount()) {
-        printf("    Frame Rate:\t\t\t%.3ffps\n", (float)track.GetSampleCount()/
+  if (track.GetType() == AP4_Track::TYPE_VIDEO && track.GetSampleCount()) {
+        printf("\tFrame Rate:\t\t%.3ffps\n", (float)track.GetSampleCount()/
                ((float)track.GetMediaDuration()/(float)track.GetMediaTimeScale()));
     }
-    
+        
     // show samples if requested
     if (show_samples) {
         AP4_Sample     sample;
@@ -1624,10 +1624,10 @@ main(int argc, char** argv)
         if(l>0 && isspace(str[l-1]))
             str[l - 1] = '\0';
         
-        // remove space exit character
+        // remove space exit character for mac
         int j=0;
         for(size_t i=0;i<strlen(str);i++){
-            if(str[i] != '\\')
+            if(!(str[i] == '\\' && str[i+1] == ' '))
                 str2[j++] = str[i];
         }
         
