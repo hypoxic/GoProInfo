@@ -33,6 +33,7 @@
 +---------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include "Ap4.h"
 #include "Ap4BitStream.h"
@@ -42,7 +43,7 @@
 /*----------------------------------------------------------------------
 |   constants
 +---------------------------------------------------------------------*/
-#define BANNER "GoPro Camera MP4 Information Parser\n\tVersion 0.0.2\n"\
+#define BANNER "GoPro Camera MP4 Information Parser\n\tVersion 0.0.3\n"\
                "Get Hypoxic LLC - GPL v2\n"\
                "Updates at http://gethypoxic.com\n"\
                "\t(Using Bento4 Version " AP4_VERSION_STRING ")\n"\
@@ -1605,10 +1606,32 @@ main(int argc, char** argv)
     
     if (argc < 2) {
         char str[1024] = {0};
+        char str2[1024] = {0};
         
         printf("Drag the file onto the console and press return\n");
-        scanf("%s", str);
-        filename = str;
+        
+        fgets (str, sizeof(str), stdin);
+        
+        /* Remove trailing newline, if there. */
+        size_t l = strlen(str);
+        
+        // remove return
+        if(l >0 && str[l - 1] == '\n')
+            str[l - 1] = '\0';
+        
+        // now a trailing space
+        l=strlen(str);
+        if(l>0 && isspace(str[l-1]))
+            str[l - 1] = '\0';
+        
+        // remove space exit character
+        int j=0;
+        for(size_t i=0;i<strlen(str);i++){
+            if(str[i] != '\\')
+                str2[j++] = str[i];
+        }
+        
+        filename = str2;
         
         if( filename == NULL)
             PrintUsageAndExit();
