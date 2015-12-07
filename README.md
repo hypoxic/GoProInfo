@@ -1,7 +1,10 @@
 # GoProInfo
 Display's the GoPro's Settings and reads the Highlight tags from MP4 File.
-Build with Bento4 library https://www.bento4.com/
+http://gethypoxic.com/blogs/technical/85927431-goproinfo-tool-to-extract-gopro-cameras-settings
 
+Build with Bento4 library https://github.com/axiomatic-systems/Bento4
+
+--------------------------------------------------------------------
 GoProInfo is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
