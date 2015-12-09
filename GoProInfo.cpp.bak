@@ -43,7 +43,7 @@
 /*----------------------------------------------------------------------
 |   constants
 +---------------------------------------------------------------------*/
-#define BANNER "GoPro Camera MP4 Information Parser\n\tVersion 0.0.4\n"\
+#define BANNER "GoPro Camera MP4 Information Parser\n\tVersion 0.0.3\n"\
                "Get Hypoxic LLC - GPL v2\n"\
                "Updates at http://gethypoxic.com\n"\
                "\t(Using Bento4 Version " AP4_VERSION_STRING ")\n"\
@@ -1683,13 +1683,12 @@ main(int argc, char** argv)
         // Searching for GoPro Data Bits
         if(AP4_ContainerAtom* ilst = dynamic_cast<AP4_ContainerAtom*>(movie->GetMoovAtom()->FindChild("udta")))
         {
-            int text;
+            int text = -1;
             
             for(AP4_List<AP4_Atom>::Item* item = ilst->GetChildren().FirstItem();
                 item;
                 item = item->GetNext())
             {
-				text = -1; 
                 AP4_Atom* uatom = static_cast<AP4_UnknownAtom*>(item->GetData());
                 AP4_DataAtom* data_atom = static_cast<AP4_DataAtom*>(item->GetData());
                 
@@ -1704,7 +1703,7 @@ main(int argc, char** argv)
                         break;
                         
                     case AP4_ATOM_TYPE_GPRO_CAME:
-                        printf("\nGoPro Camera Serial (MD5 Encoded - HERO4):\n\t");
+                        printf("\nGoPro Camera Serial (MD5 Encoded):\n\t");
                         text = 0;
                         break;
                         
@@ -1722,13 +1721,13 @@ main(int argc, char** argv)
                         printf("\nHightlight Tags:\n");
                         PrintHighLights(*data_atom);
                         break;
-
+                        
                     default:
                     break;
                 };
                 
                 if(text>=0){
-                    ShowPayload(*data_atom, (text==1)?true:false);
+                    ShowPayload(*data_atom, text);
 
                     printf("\n");
                 }
