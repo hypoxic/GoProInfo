@@ -3,7 +3,7 @@
 |    AP4 - MP4 File Info
 |
 |    Copyright 2002-2015 Axiomatic Systems, LLC
-|    Copyright 2015 Get Hypoxic LLC
+|    Copyright 2016 Get Hypoxic LLC
 |
 |    Modified from Mp4Info from Bento4 - HYPOXIC
 |
@@ -43,7 +43,7 @@
 /*----------------------------------------------------------------------
 |   constants
 +---------------------------------------------------------------------*/
-#define BANNER "GoPro Camera MP4 Information Parser\n\tVersion 0.0.4\n"\
+#define BANNER "GoPro Camera MP4 Information Parser\n\tVersion 0.0.5\n"\
                "Get Hypoxic LLC - GPL v2\n"\
                "Updates at http://gethypoxic.com\n"\
                "\t(Using Bento4 Version " AP4_VERSION_STRING ")\n"\
@@ -208,6 +208,30 @@ PrintHighLights(AP4_Atom& atom)
     
 }
 
+#define arraysize(ar)  (sizeof(ar) / sizeof(ar[0]))
+const char *strs_vmode[] = {"Video","Timelapse Video","Looping","Video/Photo"};
+const char *strs_fov[] = {"Wide","Medium","Narrow"};
+
+const char *strs_orient[] = {"Up","Down"};
+
+const char *strs_OnOff[] = {"On","Off"};
+const char *strs_OffOn[] = {"Off","On"};
+
+const char *strs_pt_wb[] = {"Auto*", "3000K", "5500K", "6500K", "Native"};
+const char *strs_pt_color[] = {"Flat","GoPro Color*"};
+const char *strs_pt_iso_video[] = {"6400*","3200","1600","800","400"};
+const char *strs_pt_sharpness[] = {"Low","Medium","High*"};
+const char *strs_pt_ev[] = {"+2","+1.5","+1","+0.5","0","-0.5","-1","-1.5","-2"};
+const char str_unknown[] = "Unknown";
+
+const char *
+DecipherValue(const char** strarray, int max, int value){
+    if(value < max)
+        return(strarray[value]);
+    else
+        return str_unknown;
+}
+
 /*----------------------------------------------------------------------
  |   GetGoProSettings
  +---------------------------------------------------------------------*/
@@ -252,26 +276,35 @@ GetGoProSettings(AP4_Atom& atom)
         printf("(0x%x 0x%x 0x%x)\n\n", sett1, sett2, sett3);
       
         // 0 video
-        printf("\tmode:\t\t\t%d\n",mode);
+        if(mode){
+            printf("\tmode:\t\t\t%d\n",mode);
+            printf("\tsubmode:\t\t%d\n",submode);
+        }else{
+            printf("\tmode:\t\t\t%s\n",DecipherValue(strs_vmode,arraysize(strs_vmode),submode));
+        }
         
-        // 0 video, 1 timelapse video
-        printf("\tsubmode:\t\t%d\n",submode);
-        printf("\ttimelapse_rate:\t\t%d\n",timelapse_rate);
-        printf("\torientation:\t\t%d\n",orientation);
-        printf("\tspotmeter:\t\t%d\n",spotmeter);
+        
+        printf("\torientation:\t\t%s\n",DecipherValue(strs_orient,arraysize(strs_orient),orientation));
+        printf("\tspotmeter:\t\t%s\n",DecipherValue(strs_OffOn,arraysize(strs_OffOn),spotmeter));
         
         //printf("white_bal (Indicates Color Correction Matrix not applied): %d\n",white_bal);
-        printf("\tfov:\t\t\t%d\n",fov);
-        printf("\tlowlight:\t\t%d\n",lowlight);
-        printf("\tsuperview:\t\t%d\n",superview);
-
-        printf("\tprotune:\t\t%d\n",protune);
-        printf("\tprotune_sharpness:\t%d\n",protune_sharpness);
-        printf("\tprotune_color:\t\t%d\n",protune_color);
-        printf("\tprotune_iso:\t\t%d\n",protune_iso);
-        printf("\tprotune_ev:\t\t%d\n",protune_ev);
-        printf("\tprotune_wb:\t\t%d\n",protune_wb);
+        printf("\tfov:\t\t\t%s\n",DecipherValue(strs_fov,arraysize(strs_fov),fov));
         
+        printf("\tlowlight:\t\t%s\n",DecipherValue(strs_OffOn,arraysize(strs_OffOn),lowlight));
+        printf("\tsuperview:\t\t%s\n",DecipherValue(strs_OffOn,arraysize(strs_OffOn),superview));
+
+        printf("\tprotune:\t\t%s\n",DecipherValue(strs_OffOn,arraysize(strs_OffOn),protune));
+        if(protune){
+            printf("\tprotune_wb:\t\t%s\n",DecipherValue(strs_pt_wb,arraysize(strs_pt_wb),protune_wb));
+            printf("\tprotune_color:\t\t%s\n",DecipherValue(strs_pt_color,arraysize(strs_pt_color),protune_color));
+            printf("\tprotune_iso:\t\t%s\n",DecipherValue(strs_pt_iso_video,arraysize(strs_pt_iso_video),protune_iso));
+            if(!protune_iso)
+                printf("\tWARNING: ISO can also be set to 800 or 3200. It's not set in firmware for these values!\n");
+            printf("\tprotune_sharpness:\t%s\n",DecipherValue(strs_pt_sharpness,arraysize(strs_pt_sharpness),protune_sharpness));
+            printf("\tprotune_ev:\t\t%s\n",DecipherValue(strs_pt_ev,arraysize(strs_pt_ev),protune_ev));
+        }
+        
+        printf("\n\ttimelapse_rate:\t\t%d\n",timelapse_rate);
         printf("\tbroadcast_privacy:\t%d\n",broadcast_privacy);
         printf("\tmedia_type:\t\t%d\n",media_type);
         
